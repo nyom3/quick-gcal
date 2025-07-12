@@ -6,7 +6,9 @@ module.exports = {
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "cn": (()=>cn)
+    "cn": (()=>cn),
+    "formatDate": (()=>formatDate),
+    "formatTime": (()=>formatTime)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$clsx$2f$dist$2f$clsx$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/clsx/dist/clsx.mjs [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$tailwind$2d$merge$2f$dist$2f$bundle$2d$mjs$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/tailwind-merge/dist/bundle-mjs.mjs [app-ssr] (ecmascript)");
@@ -15,6 +17,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$tailwind$2d$
 function cn(...inputs) {
     return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$tailwind$2d$merge$2f$dist$2f$bundle$2d$mjs$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["twMerge"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$clsx$2f$dist$2f$clsx$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["clsx"])(inputs));
 }
+const formatDate = (date)=>{
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0から始まるため+1
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+const formatTime = (date)=>date.toTimeString().split(' ')[0].substring(0, 5);
 }}),
 "[project]/src/components/ui/button.tsx [app-ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -261,6 +270,7 @@ async function createCalendarEvent(params) {
         end: params.end,
         location: params.location
     });
+    console.log("Full response from Make webhook:", response.data);
     return response.data;
 }
 }}),
@@ -279,6 +289,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$l
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$api$2f$calendar$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/api/calendar.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/sonner/dist/index.mjs [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/utils.ts [app-ssr] (ecmascript)");
 'use client';
 ;
 ;
@@ -287,57 +298,71 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$di
 ;
 ;
 ;
+;
 function QuickAddForm() {
-    const now = new Date();
-    const defaultStartTime = new Date(now.getTime() + 30 * 60 * 1000);
-    const defaultEndTime = new Date(now.getTime() + 60 * 60 * 1000);
-    const formatDate = (date)=>date.toISOString().split('T')[0];
-    const formatTime = (date)=>date.toTimeString().split(' ')[0].substring(0, 5);
     const [title, setTitle] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
-    const [date, setDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(formatDate(now));
-    const [startTime, setStartTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(formatTime(defaultStartTime));
-    const [endTime, setEndTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(formatTime(defaultEndTime));
+    const [date, setDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatDate"])(new Date()));
+    const [startTime, setStartTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatTime"])(new Date(new Date().getTime() + 30 * 60 * 1000)));
+    const [endTime, setEndTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatTime"])(new Date(new Date().getTime() + 60 * 60 * 1000)));
     const [location, setLocation] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
-    const handleSubmit = async (e)=>{
+    const handleSubmit = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (e)=>{
         e.preventDefault();
-        const startDateTime = `${date}T${startTime}`;
-        const endDateTime = `${date}T${endTime}`;
+        const startDateTimeObj = new Date(`${date}T${startTime}:00`);
+        const endDateTimeObj = new Date(`${date}T${endTime}:00`);
+        const timezoneOffsetMinutes = startDateTimeObj.getTimezoneOffset();
+        const offsetHours = Math.floor(Math.abs(timezoneOffsetMinutes) / 60);
+        const offsetMinutes = Math.abs(timezoneOffsetMinutes) % 60;
+        const offsetSign = timezoneOffsetMinutes > 0 ? '-' : '+';
+        const formattedOffset = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
+        const startDateTimeWithOffset = `${date}T${startTime}:00${formattedOffset}`;
+        const endDateTimeWithOffset = `${date}T${endTime}:00${formattedOffset}`;
         try {
             const apiResponse = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$api$2f$calendar$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["createCalendarEvent"])({
                 title,
-                start: startDateTime,
-                end: endDateTime,
+                start: startDateTimeWithOffset,
+                end: endDateTimeWithOffset,
                 location
             });
             let htmlLink = null;
             if (Array.isArray(apiResponse) && apiResponse.length > 0 && apiResponse[0]?.htmlLink) {
                 htmlLink = apiResponse[0].htmlLink;
             }
+            // フォームをリセットする際に、現在時刻を再取得してデフォルト値を更新
+            const newNow = new Date();
+            setTitle("");
+            setDate((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatDate"])(newNow));
+            setStartTime((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatTime"])(new Date(newNow.getTime() + 30 * 60 * 1000)));
+            setEndTime((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["formatTime"])(new Date(newNow.getTime() + 60 * 60 * 1000))); // ここを修正
+            setLocation("");
             if (htmlLink) {
-                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                    href: htmlLink,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    className: "underline",
-                    children: "✅ 予定を登録しました (リンク)"
-                }, void 0, false, {
-                    fileName: "[project]/src/components/QuickAddForm.tsx",
-                    lineNumber: 45,
-                    columnNumber: 11
-                }, this));
+                // リンクの表示を2秒遅延させる
+                setTimeout(()=>{
+                    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                        href: htmlLink,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "underline",
+                        children: "✅ 予定を登録しました (カレンダーで表示)"
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/QuickAddForm.tsx",
+                        lineNumber: 64,
+                        columnNumber: 13
+                    }, this));
+                }, 2000); // 2秒 (2000ミリ秒) 遅延
             } else {
                 __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success("✅ 予定を登録しました");
             }
-            setTitle("");
-            setDate(formatDate(now));
-            setStartTime(formatTime(defaultStartTime));
-            setEndTime(formatTime(defaultEndTime));
-            setLocation("");
         } catch (error) {
             console.error("Failed to create event:", error);
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].error("❌ 予定の登録に失敗しました");
         }
-    };
+    }, [
+        title,
+        date,
+        startTime,
+        endTime,
+        location
+    ]);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
         onSubmit: handleSubmit,
         className: "space-y-4",
@@ -349,7 +374,7 @@ function QuickAddForm() {
                         children: "Title"
                     }, void 0, false, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 67,
+                        lineNumber: 82,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -360,13 +385,13 @@ function QuickAddForm() {
                         required: true
                     }, void 0, false, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 68,
+                        lineNumber: 83,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                lineNumber: 66,
+                lineNumber: 81,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -379,7 +404,7 @@ function QuickAddForm() {
                                 children: "Date"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                                lineNumber: 72,
+                                lineNumber: 87,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -390,13 +415,13 @@ function QuickAddForm() {
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                                lineNumber: 73,
+                                lineNumber: 88,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 71,
+                        lineNumber: 86,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -409,7 +434,7 @@ function QuickAddForm() {
                                         children: "Start Time"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                                        lineNumber: 77,
+                                        lineNumber: 92,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -420,13 +445,13 @@ function QuickAddForm() {
                                         required: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                                        lineNumber: 78,
+                                        lineNumber: 93,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                                lineNumber: 76,
+                                lineNumber: 91,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -436,7 +461,7 @@ function QuickAddForm() {
                                         children: "End Time"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                                        lineNumber: 81,
+                                        lineNumber: 96,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -447,25 +472,25 @@ function QuickAddForm() {
                                         required: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                                        lineNumber: 82,
+                                        lineNumber: 97,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                                lineNumber: 80,
+                                lineNumber: 95,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 75,
+                        lineNumber: 90,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                lineNumber: 70,
+                lineNumber: 85,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -475,7 +500,7 @@ function QuickAddForm() {
                         children: "Location (optional)"
                     }, void 0, false, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 87,
+                        lineNumber: 102,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -485,13 +510,13 @@ function QuickAddForm() {
                         onChange: (e)=>setLocation(e.target.value)
                     }, void 0, false, {
                         fileName: "[project]/src/components/QuickAddForm.tsx",
-                        lineNumber: 88,
+                        lineNumber: 103,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                lineNumber: 86,
+                lineNumber: 101,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -500,13 +525,13 @@ function QuickAddForm() {
                 children: "Add Event"
             }, void 0, false, {
                 fileName: "[project]/src/components/QuickAddForm.tsx",
-                lineNumber: 90,
+                lineNumber: 105,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/QuickAddForm.tsx",
-        lineNumber: 65,
+        lineNumber: 80,
         columnNumber: 5
     }, this);
 }
