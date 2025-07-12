@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///E:/apps/quick-gcal/src/components/CalendarView.tsx"],"sourcesContent":["'use client';\n\nimport FullCalendar from '@fullcalendar/react';\nimport dayGridPlugin from '@fullcalendar/daygrid';\n\nexport default function CalendarView() {\n  return (\n    <FullCalendar\n      plugins={[dayGridPlugin]}\n      initialView=\"dayGridMonth\"\n      events={[\n        { title: 'event 1', date: '2025-07-01' },\n        { title: 'event 2', date: '2025-07-02' }\n      ]}\n    />\n  );\n}\n"],"names":[],"mappings":";;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACtB,qBACE,8OAAC,wJAAA,CAAA,UAAY;QACX,SAAS;YAAC,kJAAA,CAAA,UAAa;SAAC;QACxB,aAAY;QACZ,QAAQ;YACN;gBAAE,OAAO;gBAAW,MAAM;YAAa;YACvC;gBAAE,OAAO;gBAAW,MAAM;YAAa;SACxC;;;;;;AAGP","debugId":null}}]
-}
