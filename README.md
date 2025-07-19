@@ -25,4 +25,36 @@ cp .env.example .env.local
 npm run dev
 ```
 
-詳しい開発経緯や技術解説は `docs/` ディレクトリの Markdown を参照してください。
+上記コマンドで `http://localhost:3000` にアクセスできるようになります。
+
+## ビルド方法
+
+本番用の静的ファイルを生成するには次のコマンドを実行します。
+
+```bash
+npm run build
+```
+
+ビルド後、以下で本番サーバを起動できます。
+
+```bash
+npm start
+```
+
+## 必要な環境変数
+
+Google Calendar へイベントを登録するため、Make（旧 Integromat）の Webhook URL を環境変数として設定する必要があります。
+
+* `NEXT_PUBLIC_MAKE_CREATE_WEBHOOK_URL` : Make で作成した Webhook の URL
+
+`.env.local` などに以下のように記述してください。
+
+```env
+NEXT_PUBLIC_MAKE_CREATE_WEBHOOK_URL=https://hook.example.com/your-webhook-id
+```
+
+この値は `src/api/calendar.ts` で参照され、イベント作成時の HTTP リクエスト送信先として利用されます。
+
+## 補足
+
+詳しい開発経緯や技術解説は `docs/` ディレクトリ内の Markdown を参照してください。
