@@ -10,6 +10,13 @@ import { createCalendarEvent } from "@/api/calendar"; // Googleカレンダー�
 import { toast } from "sonner"; // トースト通知を表示するためのライブラリをインポート。
 import { formatDate, formatTime } from "@/lib/utils"; // 日付と時刻のフォーマットユーティリティ関数をインポート。
 
+// 事前に用意されたイベントテンプレートの定義
+const templates = [
+  { name: "歯医者", title: "歯医者", duration: 30, description: "定期検診" },
+  { name: "飲み会", title: "飲み会", duration: 120, description: "〇〇と居酒屋" },
+  { name: "面談", title: "1on1面談", duration: 45, description: "業務報告と相談" },
+] as const;
+
 // Make WebhookからのAPIレスポンスの型定義。
 // これにより、レスポンスデータの構造が明確になり、型安全性が向上します。
 interface ApiResponse {
@@ -41,6 +48,8 @@ export default function QuickAddForm() {
   const [endTime, setEndTime] = useState(formatTime(defaultEndTime));
   // イベントの場所（オプション）。
   const [location, setLocation] = useState("");
+  // イベントの説明（オプション）。
+  const [description, setDescription] = useState("");
 
   // フォーム送信時のハンドラー関数。
   // useCallbackを使用することで、コンポーネントが再レンダリングされてもこの関数が再作成されるのを防ぎ、
@@ -73,6 +82,7 @@ export default function QuickAddForm() {
         start: startDateTimeWithOffset, // タイムゾーン情報を含む開始日時
         end: endDateTimeWithOffset,     // タイムゾーン情報を含む終了日時
         location,
+        description,
       });
 
       let htmlLink: string | null = null; // Googleカレンダーイベントへのリンクを格納する変数。
@@ -91,6 +101,7 @@ export default function QuickAddForm() {
       setStartTime(formatTime(new Date(newNow.getTime() + 30 * 60 * 1000))); // 開始時刻を現在時刻の30分後にリセット。
       setEndTime(formatTime(new Date(newNow.getTime() + 60 * 60 * 1000)));   // 終了時刻を現在時刻の1時間後にリセット。
       setLocation(""); // 場所をクリア。
+      setDescription(""); // 説明をクリア。
 
       // htmlLinkが存在する場合、リンク付きの成功トーストを表示します。
       // Googleカレンダーがイベントを認識するまでの時間差を考慮し、2秒の遅延を設けています。
@@ -114,12 +125,32 @@ export default function QuickAddForm() {
       console.error("Failed to create event:", error);
       toast.error("❌ 予定の登録に失敗しました");
     }
-  }, [title, date, startTime, endTime, location]); // useCallbackの依存配列。これらの値が変更された場合にのみhandleSubmitが再作成されます。
+  }, [title, date, startTime, endTime, location, description]); // useCallbackの依存配列。これらの値が変更された場合にのみhandleSubmitが再作成されます。
 
   // フォームのUI構造。
   // shadcn/uiのコンポーネントとTailwind CSSを使用して、モバイルフレンドリーなレイアウトを実現しています。
   return (
     <form onSubmit={handleSubmit} className="space-y-4"> {/* 各フォーム要素間にスペースを設けるためのTailwindクラス */}
+      <div className="flex flex-wrap gap-2">
+        {templates.map((t) => (
+          <Button
+            key={t.name}
+            type="button"
+            variant="outline"
+            onClick={() => {
+              const start = new Date();
+              const end = new Date(start.getTime() + t.duration * 60000);
+              setTitle(t.title);
+              setDate(formatDate(start));
+              setStartTime(formatTime(start));
+              setEndTime(formatTime(end));
+              setDescription(t.description ?? "");
+            }}
+          >
+            {t.name}
+          </Button>
+        ))}
+      </div>
       <div>
         <Label htmlFor="title">Title</Label> {/* イベントタイトルのラベル */}
         <Input id="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required /> {/* タイトル入力フィールド */}
@@ -145,6 +176,10 @@ export default function QuickAddForm() {
       <div>
         <Label htmlFor="location">Location (optional)</Label> {/* 場所のラベル（オプション） */}
         <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} /> {/* 場所入力フィールド */}
+      </div>
+      <div>
+        <Label htmlFor="description">Description (optional)</Label>
+        <Input id="description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <Button type="submit" className="w-full">Add Event</Button> {/* イベント追加ボタン。w-fullで幅いっぱいに表示 */}
     </form>

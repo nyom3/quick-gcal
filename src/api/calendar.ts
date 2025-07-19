@@ -7,6 +7,7 @@ interface CreateEventParams {
   start: string;   // イベントの開始日時。ISO 8601形式 (例: YYYY-MM-DDTHH:MM:SS+HH:MM)。タイムゾーン情報を含むことが重要です。
   end: string;     // イベントの終了日時。ISO 8601形式。
   location?: string; // イベントの場所。オプション。
+  description?: string; // イベントの説明。オプション。
 }
 
 // Googleカレンダーにイベントを作成するための非同期関数。
@@ -29,6 +30,7 @@ export async function createCalendarEvent(params: CreateEventParams) {
     start: params.start,
     end: params.end,
     location: params.location,
+    description: params.description,
   });
 
   // Make Webhookからの生のレスポンスデータをコンソールに出力します。
