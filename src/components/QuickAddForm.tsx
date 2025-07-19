@@ -14,7 +14,8 @@ import { formatDate, formatTime } from "@/lib/utils"; // 日付と時刻のフ�
 const templates = [
   { name: "歯医者", title: "歯医者", duration: 30, description: "定期検診" },
   { name: "飲み会", title: "飲み会", duration: 120, description: "〇〇と居酒屋" },
-  { name: "面談", title: "1on1面談", duration: 45, description: "業務報告と相談" },
+  { name: "デート", title: "デート", duration: 60, description: "ｘｘさんとディナー" },
+  { name: "会議", title: "会議", duration: 30, description: "プロジェクトの進捗確認" }
 ] as const;
 
 // Make WebhookからのAPIレスポンスの型定義。
@@ -50,6 +51,23 @@ export default function QuickAddForm() {
   const [location, setLocation] = useState("");
   // イベントの説明（オプション）。
   const [description, setDescription] = useState("");
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text.startsWith("https://") || text.startsWith("http://")) {
+        const linkText = "リンク"; // リンクの表示テキストを"リンク"とする
+        const newLink = `<a href="${text}">${linkText}</a>`;
+        setDescription((prevDesc) => (prevDesc ? `${prevDesc}\n${newLink}` : newLink));
+        toast.success("✅ リンクを貼り付けました");
+      } else {
+        toast.error("❌ 有効なURLが検出されません");
+      }
+    } catch (error) {
+      console.error("Failed to read clipboard contents:\n", error);
+      toast.error("❌ クリップボードの読み取りに失敗しました");
+    }
+  };
 
   // フォーム送信時のハンドラー関数。
   // useCallbackを使用することで、コンポーネントが再レンダリングされてもこの関数が再作成されるのを防ぎ、
@@ -180,6 +198,14 @@ export default function QuickAddForm() {
       <div>
         <Label htmlFor="description">Description (optional)</Label>
         <Input id="description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-2"
+          onClick={handlePasteFromClipboard}
+        >
+          リンクを貼り付け
+        </Button>
       </div>
       <Button type="submit" className="w-full">Add Event</Button> {/* イベント追加ボタン。w-fullで幅いっぱいに表示 */}
     </form>
