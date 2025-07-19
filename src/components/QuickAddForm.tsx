@@ -9,6 +9,11 @@ import { useState, useCallback } from "react"; // Reactのstate管理とパフ�
 import { createCalendarEvent } from "@/api/calendar"; // Googleカレンダーイベント作成APIを呼び出すためのラッパー関数をインポート。
 import { toast } from "sonner"; // トースト通知を表示するためのライブラリをインポート。
 import { formatDate, formatTime } from "@/lib/utils"; // 日付と時刻のフォーマットユーティリティ関数をインポート。
+import {
+  CalendarPlus,
+  ClipboardList,
+  ClipboardPaste,
+} from "lucide-react"; // ボタン用アイコン
 
 // 事前に用意されたイベントテンプレートの定義
 const templates = [
@@ -148,13 +153,14 @@ export default function QuickAddForm() {
   // フォームのUI構造。
   // shadcn/uiのコンポーネントとTailwind CSSを使用して、モバイルフレンドリーなレイアウトを実現しています。
   return (
-    <form onSubmit={handleSubmit} className="space-y-4"> {/* 各フォーム要素間にスペースを設けるためのTailwindクラス */}
-      <div className="flex flex-wrap gap-2">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto"> {/* 各フォーム要素間にスペースを設けるためのTailwindクラス */}
+      <div className="flex flex-wrap gap-x-2 gap-y-2">
         {templates.map((t) => (
           <Button
             key={t.name}
             type="button"
             variant="outline"
+            size="sm"
             onClick={() => {
               const start = new Date();
               const end = new Date(start.getTime() + t.duration * 60000);
@@ -165,49 +171,55 @@ export default function QuickAddForm() {
               setDescription(t.description ?? "");
             }}
           >
+            <ClipboardList className="mr-2 h-4 w-4" />
             {t.name}
           </Button>
         ))}
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="title">Title</Label> {/* イベントタイトルのラベル */}
         <Input id="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required /> {/* タイトル入力フィールド */}
       </div>
       {/* 日付と時刻の入力フィールドのレイアウト。モバイルでは縦に、sm以上の画面ではグリッドレイアウトになります。 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="date">Date</Label> {/* 日付のラベル */}
           <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required /> {/* 日付入力フィールド */}
         </div>
         {/* 開始時刻と終了時刻のフィールドをグループ化し、sm以上の画面で2カラム表示にします。 */}
         <div className="sm:col-span-2 grid grid-cols-2 gap-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="startTime">Start Time</Label> {/* 開始時刻のラベル */}
             <Input id="startTime" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required /> {/* 開始時刻入力フィールド */}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="endTime">End Time</Label> {/* 終了時刻のラベル */}
             <Input id="endTime" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required /> {/* 終了時刻入力フィールド */}
           </div>
         </div>
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="location">Location (optional)</Label> {/* 場所のラベル（オプション） */}
         <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} /> {/* 場所入力フィールド */}
       </div>
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="description">Description (optional)</Label>
         <Input id="description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
+          size="sm"
           className="mt-2"
           onClick={handlePasteFromClipboard}
         >
+          <ClipboardPaste className="mr-2 h-4 w-4" />
           リンクを貼り付け
         </Button>
       </div>
-      <Button type="submit" className="w-full">Add Event</Button> {/* イベント追加ボタン。w-fullで幅いっぱいに表示 */}
+      <Button type="submit" className="w-full" variant="default">
+        <CalendarPlus className="mr-2 h-4 w-4" />
+        Add Event
+      </Button> {/* イベント追加ボタン。w-fullで幅いっぱいに表示 */}
     </form>
   );
 }
