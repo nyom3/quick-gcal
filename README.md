@@ -1,5 +1,7 @@
 # quick-gcal
 
+[![Lighthouse CI](https://github.com/nyom3/quick-gcal/actions/workflows/lhci.yml/badge.svg)](https://github.com/nyom3/quick-gcal/actions/workflows/lhci.yml)
+
 このアプリケーションは Google Calendar と連携するための Next.js 製サンプルです。
 
 ## セットアップ
