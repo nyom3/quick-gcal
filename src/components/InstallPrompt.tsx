@@ -21,6 +21,7 @@ export function InstallPrompt() {
       e.preventDefault();
       if (typeof window !== 'undefined') {
         window.__bip_fired = true;
+        (window as any).__bip_event = e;
       }
       console.info('[PWA] beforeinstallprompt fired');
       setEvent(e as BIPE);
@@ -43,7 +44,10 @@ export function InstallPrompt() {
   };
 
   return (
-    <div className="fixed bottom-4 inset-x-0 flex justify-center px-4 z-50">
+    <div
+      className="fixed inset-x-0 flex justify-center px-4 z-50"
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 16px)` }}
+    >
       <div className="rounded-xl border bg-background shadow-sm p-3 flex items-center gap-3">
         <span className="text-sm">アプリをインストールできます</span>
         <div className="flex gap-2">
