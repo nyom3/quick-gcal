@@ -43,11 +43,28 @@ export function InstallPrompt() {
   };
 
   return (
-    <div className="fixed bottom-4 inset-x-0 flex justify-center px-4">
+    <div className="fixed bottom-4 inset-x-0 flex justify-center px-4 z-50">
       <div className="rounded-xl border bg-background shadow-sm p-3 flex items-center gap-3">
         <span className="text-sm">アプリをインストールできます</span>
         <div className="flex gap-2">
-          <Button size="sm" variant="default" onClick={onInstall}>インストール</Button>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={async () => {
+              try {
+                console.info('[PWA] Prompting install UI');
+                await event.prompt();
+                // userChoice は仕様で存在。型は必須ではないので optional に。
+                const choice = await (event as any).userChoice;
+                console.info('[PWA] userChoice', choice);
+              } finally {
+                setVisible(false);
+                setEvent(null);
+              }
+            }}
+          >
+            インストール
+          </Button>
           <Button size="sm" variant="ghost" onClick={() => setVisible(false)}>閉じる</Button>
         </div>
       </div>
