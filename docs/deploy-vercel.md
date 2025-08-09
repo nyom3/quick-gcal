@@ -38,7 +38,7 @@
 
 1. GitHub → リポジトリ → `Actions` → ワークフロー `Lighthouse CI` を選択
 2. 右上の `Run workflow` をクリック
-3. 入力 `prod_url` に計測したいURLを入力（未入力なら `LHCI_PROD_URL` 変数、さらに未設定なら `https://quick-gcal.vercel.app`）
+3. 入力 `prod_url` に計測したいURLを入力（未入力なら `LHCI_PROD_URL` 変数を使用。未設定の場合はエラーになります）
 4. `Run workflow` で実行
 
 実行後、対象ワークフローの `Step Summary` に平均スコアが表示されます。

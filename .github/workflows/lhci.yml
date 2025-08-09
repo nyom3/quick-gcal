@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       prod_url:
-        description: "計測対象の本番URL（未指定なら既定/変数を使用）"
+        description: "計測対象の本番URL（未指定なら変数を使用）"
         required: false
         default: ""
 
@@ -15,8 +15,8 @@ permissions:
   pull-requests: write
 
 env:
-  # 手動実行入力 > リポジトリ変数 > シークレット > 既定値 の優先で設定
-  PROD_URL: ${{ github.event.inputs.prod_url || vars.LHCI_PROD_URL || secrets.LHCI_PROD_URL || 'https://quick-gcal.vercel.app' }}
+  # 手動実行入力 > リポジトリ変数 > シークレット の優先で設定（既定値なし）
+  PROD_URL: ${{ github.event.inputs.prod_url || vars.LHCI_PROD_URL || secrets.LHCI_PROD_URL }}
 
 jobs:
   lhci:
@@ -37,6 +37,10 @@ jobs:
       - name: Show target URL
         run: |
           echo "Target URL: ${PROD_URL}"
+          if [ -z "${PROD_URL}" ]; then
+            echo "PROD_URL is not set. Provide workflow input 'prod_url' or set repository variable/secret 'LHCI_PROD_URL'." >&2
+            exit 1
+          fi
 
       - name: Run Lighthouse CI (assert >=90)
         run: |
