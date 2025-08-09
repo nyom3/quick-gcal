@@ -8,7 +8,14 @@ export function PWARegister() {
     if ('serviceWorker' in navigator) {
       const register = async () => {
         try {
-          await navigator.serviceWorker.register('/sw.js');
+          const reg = await navigator.serviceWorker.register('/sw.js');
+          // Debug: registration and scope
+          console.info('[PWA] SW registered', { scope: reg.scope });
+          if (navigator.serviceWorker.controller) {
+            console.info('[PWA] This page is controlled by SW');
+          } else {
+            console.info('[PWA] This page is NOT yet controlled (reload may be required)');
+          }
         } catch (err) {
           console.error('SW registration failed', err);
         }
@@ -20,4 +27,3 @@ export function PWARegister() {
   }, []);
   return null;
 }
-

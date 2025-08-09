@@ -22,6 +22,7 @@ export function InstallPrompt() {
       if (typeof window !== 'undefined') {
         window.__bip_fired = true;
       }
+      console.info('[PWA] beforeinstallprompt fired');
       setEvent(e as BIPE);
       setVisible(true);
     };
@@ -33,6 +34,7 @@ export function InstallPrompt() {
 
   const onInstall = async () => {
     try {
+      console.info('[PWA] Prompting install UI');
       await event.prompt();
     } finally {
       setVisible(false);
