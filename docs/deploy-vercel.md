@@ -32,3 +32,13 @@
   - Chrome DevTools の Application タブ → Manifest で要件を満たしているか確認してください。
   - `http(s)` 配信、アイコンの最小サイズ、`display: standalone` 等が満たされている必要があります。
 
+## Lighthouse CI を手動実行する（任意）
+
+本番URLに対するLighthouse計測を手動で実行できます。
+
+1. GitHub → リポジトリ → `Actions` → ワークフロー `Lighthouse CI` を選択
+2. 右上の `Run workflow` をクリック
+3. 入力 `prod_url` に計測したいURLを入力（未入力なら `LHCI_PROD_URL` 変数、さらに未設定なら `https://quick-gcal.vercel.app`）
+4. `Run workflow` で実行
+
+実行後、対象ワークフローの `Step Summary` に平均スコアが表示されます。

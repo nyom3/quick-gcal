@@ -102,8 +102,12 @@ Next.js プロジェクトのため、Vercel へのデプロイは自動検出�
 GitHub Actions で本番URLに対して Lighthouse CI を実行します（PRごと）。
 
 - ワークフロー: `.github/workflows/lhci.yml`
-- 計測対象URL: リポジトリ変数/シークレット `LHCI_PROD_URL`（未指定時は `https://quick-gcal.vercel.app`）
+- 計測対象URL: 手動入力 > リポジトリ変数/シークレット `LHCI_PROD_URL` > 既定 `https://quick-gcal.vercel.app`
 - 成果物: ワークフローページの「Step Summary」に平均スコア（Performance/Accessibility/Best Practices/SEO）を出力
+
+手動実行方法（workflow_dispatch）
+- リポジトリ → Actions → "Lighthouse CI" → "Run workflow"
+- 入力欄 `prod_url` に任意のURL（例: `https://quick-gcal.vercel.app`）を指定可能（空なら既定/変数を使用）
 
 ## 変更点サマリー（今回）
 

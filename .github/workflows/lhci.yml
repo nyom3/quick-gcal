@@ -3,14 +3,20 @@ name: Lighthouse CI
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      prod_url:
+        description: "計測対象の本番URL（未指定なら既定/変数を使用）"
+        required: false
+        default: ""
 
 permissions:
   contents: read
   pull-requests: write
 
 env:
-  # Override with Repository Variable or Secret named LHCI_PROD_URL
-  PROD_URL: ${{ vars.LHCI_PROD_URL || secrets.LHCI_PROD_URL || 'https://quick-gcal.vercel.app' }}
+  # 手動実行入力 > リポジトリ変数 > シークレット > 既定値 の優先で設定
+  PROD_URL: ${{ github.event.inputs.prod_url || vars.LHCI_PROD_URL || secrets.LHCI_PROD_URL || 'https://quick-gcal.vercel.app' }}
 
 jobs:
   lhci:
