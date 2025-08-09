@@ -68,6 +68,7 @@ NEXT_PUBLIC_MAKE_CREATE_WEBHOOK_URL=https://hook.example.com/your-webhook-id
 - マニフェスト: `src/app/manifest.ts`
 - サービスワーカー登録: `src/components/PWARegister.tsx`（`src/app/layout.tsx` で読み込み）
 - インストール促進UI: `src/components/InstallPrompt.tsx`（`beforeinstallprompt` をハンドリング）
+- フォールバック案内: `src/components/PWAInstallGuide.tsx`（Androidでプロンプトが出ない場合の手動ガイド）
 - サービスワーカー本体: `public/sw.js`
 - オフラインページ: `public/offline.html`
 

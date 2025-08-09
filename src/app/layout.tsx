@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { PWARegister } from "@/components/PWARegister";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { PWAInstallGuide } from "@/components/PWAInstallGuide";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <PWARegister />
         <InstallPrompt />
+        <PWAInstallGuide />
       </body>
     </html>
   );

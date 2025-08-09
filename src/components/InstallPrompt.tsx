@@ -1,9 +1,16 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 type BIPE = Event & { prompt: () => Promise<void>; userChoice?: Promise<{ outcome: 'accepted' | 'dismissed' }>; };
+
+declare global {
+  interface Window {
+    __bip_fired?: boolean;
+  }
+}
 
 export function InstallPrompt() {
   const [event, setEvent] = useState<BIPE | null>(null);
@@ -12,6 +19,9 @@ export function InstallPrompt() {
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
+      if (typeof window !== 'undefined') {
+        window.__bip_fired = true;
+      }
       setEvent(e as BIPE);
       setVisible(true);
     };
@@ -42,4 +52,3 @@ export function InstallPrompt() {
     </div>
   );
 }
-
