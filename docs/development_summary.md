@@ -66,3 +66,15 @@
 - **テスト**: 各機能の実装後、単体テストや統合テストを記述し、アプリケーションの品質と安定性を確保します。
 
 このロードマップに沿って、`quick-gcal` を実用的な Google Calendar クライアントとして完成させていきます。
+
+## 3. 直近の更新（PWA 対応・デプロイ）
+
+- PWA 対応を追加し、`public/sw.js`（オンデマンドキャッシュ + オフラインフォールバック）と `public/offline.html` を配備しました。
+- App Router で動的アイコン生成ルートを追加し、`/icons/icon-192.png` / `/icons/icon-512.png` / `/apple-icon.png` を自動生成します。
+- `src/app/layout.tsx` に `metadata.themeColor`, `metadata.appleWebApp`, `icons` を設定し、`PWARegister`/`InstallPrompt` を読み込みました。
+- README に Vercel へのデプロイ手順と CI（Lighthouse）を追記しました。
+
+### 運用上の注意
+- Vercel 環境では `NEXT_PUBLIC_MAKE_CREATE_WEBHOOK_URL` を Environment Variables に必ず設定してください。
+- サービスワーカー（`/sw.js`）はドメインルートで配信される必要があるため、`public/` 配下に配置しています。
+- オフラインページ（`/offline.html`）はナビゲーションフォールバックとして使用されます。

@@ -1,0 +1,108 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  # Override with Repository Variable or Secret named LHCI_PROD_URL
+  PROD_URL: ${{ vars.LHCI_PROD_URL || secrets.LHCI_PROD_URL || 'https://quick-gcal.vercel.app' }}
+
+jobs:
+  lhci:
+    name: Run Lighthouse CI on production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show target URL
+        run: |
+          echo "Target URL: ${PROD_URL}"
+
+      - name: Run Lighthouse CI (assert >=90)
+        run: |
+          npx --yes @lhci/cli@0.13.x autorun \
+            --collect.url="${PROD_URL}" \
+            --collect.numberOfRuns=3 \
+            --upload.target=temporary-public-storage
+
+      - name: Compute score summary
+        id: scores
+        run: |
+          set -euo pipefail
+          files=(.lighthouseci/*-lhr.json)
+          count=${#files[@]}
+          if [ "$count" -eq 0 ]; then
+            echo "No Lighthouse results found" >&2
+            exit 1
+          fi
+
+          avg() {
+            local key="$1"; shift
+            local sum
+            sum=$(jq -s "map(${key}) | add" "${files[@]}")
+            # jq can output null if key missing; guard
+            if [ "$sum" = "null" ] || [ -z "$sum" ]; then echo 0; return; fi
+            # Convert to percentage (scores are 0..1)
+            awk -v s="$sum" -v c="$count" 'BEGIN { printf "%.0f", (s/c)*100 }'
+          }
+
+          PERF=$(avg '.categories.performance.score')
+          A11Y=$(avg '.categories.accessibility.score')
+          BP=$(avg '.categories["best-practices"].score')
+          SEO=$(avg '.categories.seo.score')
+
+          echo "perf=${PERF}" >> "$GITHUB_OUTPUT"
+          echo "a11y=${A11Y}" >> "$GITHUB_OUTPUT"
+          echo "bp=${BP}" >> "$GITHUB_OUTPUT"
+          echo "seo=${SEO}" >> "$GITHUB_OUTPUT"
+
+          echo "\nLighthouse scores (avg of ${count} runs):" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance: ${PERF}" >> $GITHUB_STEP_SUMMARY
+          echo "- Accessibility: ${A11Y}" >> $GITHUB_STEP_SUMMARY
+          echo "- Best Practices: ${BP}" >> $GITHUB_STEP_SUMMARY
+          echo "- SEO: ${SEO}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment summary on PR (success only)
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const perf = process.env.perf;
+            const a11y = process.env.a11y;
+            const bp = process.env.bp;
+            const seo = process.env.seo;
+            const url = process.env.PROD_URL;
+            const body = [
+              `Lighthouse CI results on production: ${url}`,
+              '',
+              `- Performance: ${perf}`,
+              `- Accessibility: ${a11y}`,
+              `- Best Practices: ${bp}`,
+              `- SEO: ${seo}`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+        env:
+          perf: ${{ steps.scores.outputs.perf }}
+          a11y: ${{ steps.scores.outputs.a11y }}
+          bp: ${{ steps.scores.outputs.bp }}
+          seo: ${{ steps.scores.outputs.seo }}
