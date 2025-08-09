@@ -84,6 +84,12 @@ NEXT_PUBLIC_MAKE_CREATE_WEBHOOK_URL=https://hook.example.com/your-webhook-id
 - `metadata.appleWebApp` を設定しており、ホーム画面追加後はスタンドアロンで起動します。
 - タッチアイコンを `public/icons` に置くと、ホーム画面アイコンが反映されます（推奨: 180×180 PNG）。
 
+### Android でインストールUIが出ないとき
+- Chrome の DevTools → Application → Manifest → Installability を開き、要件未達の原因を確認
+- よくある原因: マニフェスト取得不可/アイコンサイズ不足/HTTPSでない/シークレットモード/すでにインストール済み/直前に却下（クールダウン期間）
+- リセット: Chrome のサイト設定で「追加を提案しない」を解除、またはブラウザデータを消去して再試行
+- 条件: ページへの一定のユーザーエンゲージメントが必要（何度か訪問・操作後に発火する場合があります）
+
 ## Vercel へのデプロイ
 
 Next.js プロジェクトのため、Vercel へのデプロイは自動検出されます。以下の手順で公開できます。
